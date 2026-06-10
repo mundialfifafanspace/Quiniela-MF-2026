@@ -1,0 +1,531 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiniela - Mundial de Fútbol 2026</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/xlsx@0.18.5/dist/xlsx.full.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Poppins:wght@400;500;600;700&display=swap');
+        body {
+            font-family: 'Poppins', sans-serif;
+            background-color: #030a13;
+            color: #ffffff;
+        }
+        /* Mobile Aspect Ratio Container */
+        .phone-container {
+            max-width: 412px;
+            width: 100%;
+            height: 100vh;
+            background: linear-gradient(180deg, #051329 0%, #02070f 100%);
+            margin: 0 auto;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+        }
+        .main-content {
+            flex: 1;
+            overflow-y: auto;
+            padding-bottom: 80px; /* Room for navigation bar */
+        }
+        .section-title {
+            font-size: 14pt;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: #ffffff;
+            margin-bottom: 12px;
+            padding-left: 4px;
+        }
+        .live-glow {
+            box-shadow: 0 0 14px rgba(34, 197, 94, 0.45);
+            border: 2px solid #22c55e;
+        }
+        .ayer-glow {
+            box-shadow: 0 0 14px rgba(62, 196, 196, 0.45);
+            border: 2px solid #22c0c5;
+        }        
+        /* Custom subtle scrollbars for blocks scrolling */
+        .matches-scroll::-webkit-scrollbar, .quiniela-scroll::-webkit-scrollbar {
+            height: 4px;
+            width: 4px;
+        }
+        .matches-scroll::-webkit-scrollbar-thumb {
+            background-color: rgba(34, 197, 94, 0.3);
+            border-radius: 10px;
+        }
+        .quiniela-scroll::-webkit-scrollbar-thumb {
+            background-color: rgba(59, 130, 246, 0.4);
+            border-radius: 10px;
+        }
+        .scrollbar-none::-webkit-scrollbar {
+            display: none;
+        }
+        .scrollbar-none {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-slate-900 flex justify-center items-center min-h-screen">
+
+    <div class="phone-container shadow-2xl overflow-hidden">
+        
+        <div id="view-inicio" class="main-content scrollbar-none px-4 pt-6">
+            <div class="w-full h-36 rounded-2xl mb-5 overflow-hidden relative border border-slate-800 shadow-lg">
+                <img src="Portada_Mundial_arreglada2_reducida.jpg" 
+                     class="w-full h-full object-cover brightness-15" 
+                     alt="FIFA 2026 World Cup">
+                <div class="absolute inset-0 bg-gradient-to-t from-[#051329] via-transparent to-black/40 flex flex-col justify-between p-3.5">
+                    <div class="flex justify-between items-start"></div>
+                    <div>
+                        <h1 class="text-lg font-black tracking-tight leading-tight bg-gradient-to-r from-white to-slate-300 bg-clip-text text-transparent">MUNDIAL DE FÚTBOL 2026</h1>
+                        <p class="text-[10px] text-yellow-400 font-medium tracking-wide">¡La quiniela del mundial más emocionante, divertida y adictiva!</p>
+                    </div>
+                </div>
+            </div>
+
+            <section class="mb-6">
+                <div id="current-date" class="text-xs font-semibold text-yellow-500 uppercase tracking-wider pl-1 mb-0.5"></div>
+                <div class="flex justify-between items-center mb-2">
+                    <h2 class="section-title m-0">Partidos en el 1er día:</h2>
+                    <span class="text-[10px] text-green-400 font-medium animate-pulse"><i class="fa-solid fa-angles-up-down mr-1"></i>Deslizar verticalmente</span>
+                </div>
+                <div id="partidos-hoy-container" class="rounded-2xl p-4 live-glow bg-slate-950/90 flex flex-col gap-4 max-h-[175px] overflow-y-auto matches-scroll">
+                    </div>
+            </section>
+
+            <section class="mb-6">
+                <div class="flex justify-between items-center mb-2">
+                    <h2 class="section-title">Resumen Jornada reciente</h2>
+                    <span class="text-[10px] text-blue-300 font-medium animate-pulse"><i class="fa-solid fa-angles-up-down mr-1"></i>Deslizar horizontalmente</span>
+                </div>
+                <div id="resumen-jornada-container" class="rounded-2xl p-4 ayer-glow flex gap-3 overflow-x-auto scrollbar-none pb-2">
+                    </div>
+            </section>
+
+            <section class="mb-6">
+                <div class="flex justify-between items-center mb-2">
+                    <h2 class="section-title m-0">Tabla de posiciones en la quiniela</h2>
+                    <span id="scroll-hint" class="text-[10px] text-blue-400 font-medium"><i class="fa-solid fa-angles-left-right mr-1"></i>Grupos de 5 en 5</span>
+                </div>
+                <div id="quiniela-scroll-wrapper" class="w-full overflow-x-auto quiniela-scroll pb-3 flex flex-row gap-4 snap-x snap-mandatory">
+                    </div>
+            </section>
+
+            <section class="mb-6">
+                <div class="flex justify-between items-center mb-3">
+                    <h2 class="section-title m-0">Próximos Juegos</h2>
+                </div>
+                <div id="fixture-container" class="flex gap-3 overflow-x-auto scrollbar-none pb-2">
+                    </div>
+            </section>
+
+            <div class="w-full flex items-center justify-between px-2 py-1 bg-slate-950/40 border border-slate-900 rounded-lg text-[9px] text-slate-500 mb-2">
+                <div class="flex items-center gap-1.5 truncate">
+                    <i id="sync-icon" class="fa-solid fa-copyright text-blue-600/70"></i>
+                    <span id="sync-status" class="truncate italic">Copyright 2026. Todos los derechos reservados.</span>
+                </div>
+            </div>
+        </div>
+
+        <div id="view-puntajes" class="main-content scrollbar-none px-4 pt-6 hidden">
+            <h2 class="section-title border-b border-slate-800 pb-2 mb-4">
+                <i class="fa-solid fa-chart-simple mr-2 text-yellow-500"></i>Detalle de Puntajes
+            </h2>
+            <p class="text-[11px] text-slate-400 mb-4 px-1">
+                Desliza horizontalmente sobre cada tabla para verificar los pronósticos detallados y puntos obtenidos por participante.
+            </p>
+            
+            <div class="flex flex-col gap-6">
+                <div class="bg-slate-950/60 border border-slate-800 rounded-2xl p-3 shadow-lg">
+                    <h3 class="text-xs font-bold text-yellow-400 uppercase tracking-wider mb-2 px-1 flex justify-between">
+                        <span>Participantes 1 al 7</span>
+                        <span class="text-[10px] text-slate-500 font-normal lowercase"><i class="fa-solid fa-arrow-right-left mr-1"></i>scroll horizontal</span>
+                    </h3>
+                    <div class="w-full overflow-x-auto rounded-xl border border-slate-800 bg-black/20">
+                        <img src="PuntajeDetalles1.jpg" class="max-w-none h-auto max-h-[380px]" alt="Detalles Puntajes Bloque 1">
+                    </div>
+                </div>
+
+                <div class="bg-slate-950/60 border border-slate-800 rounded-2xl p-3 shadow-lg">
+                    <h3 class="text-xs font-bold text-yellow-400 uppercase tracking-wider mb-2 px-1 flex justify-between">
+                        <span>Participantes 8 al 14</span>
+                        <span class="text-[10px] text-slate-500 font-normal lowercase"><i class="fa-solid fa-arrow-right-left mr-1"></i>scroll horizontal</span>
+                    </h3>
+                    <div class="w-full overflow-x-auto rounded-xl border border-slate-800 bg-black/20">
+                        <img src="PuntajeDetalles2.jpg" class="max-w-none h-auto max-h-[380px]" alt="Detalles Puntajes Bloque 2">
+                    </div>
+                </div>
+
+                <div class="bg-slate-950/60 border border-slate-800 rounded-2xl p-3 shadow-lg">
+                    <h3 class="text-xs font-bold text-yellow-400 uppercase tracking-wider mb-2 px-1 flex justify-between">
+                        <span>Participantes 15 al 21</span>
+                        <span class="text-[10px] text-slate-500 font-normal lowercase"><i class="fa-solid fa-arrow-right-left mr-1"></i>scroll horizontal</span>
+                    </h3>
+                    <div class="w-full overflow-x-auto rounded-xl border border-slate-800 bg-black/20">
+                        <img src="PuntajeDetalles3.jpg" class="max-w-none h-auto max-h-[380px]" alt="Detalles Puntajes Bloque 2">
+                    </div>
+                </div>                
+
+                <div class="bg-slate-950/60 border border-slate-800 rounded-2xl p-3 shadow-lg">
+                    <h3 class="text-xs font-bold text-yellow-400 uppercase tracking-wider mb-2 px-1 flex justify-between">
+                        <span>Participantes 22 al 28</span>
+                        <span class="text-[10px] text-slate-500 font-normal lowercase"><i class="fa-solid fa-arrow-right-left mr-1"></i>scroll horizontal</span>
+                    </h3>
+                    <div class="w-full overflow-x-auto rounded-xl border border-slate-800 bg-black/20">
+                        <img src="PuntajeDetalles4.jpg" class="max-w-none h-auto max-h-[380px]" alt="Detalles Puntajes Bloque 1">
+                    </div>
+                </div>                
+            </div>
+        </div>
+
+        <div id="view-reglas" class="main-content scrollbar-none px-4 pt-6 hidden">
+            <h2 class="section-title border-b border-slate-800 pb-2 mb-4"><i class="fa-solid fa-gavel mr-2 text-yellow-500"></i>Reglas del Juego</h2>
+            
+            <div class="flex flex-col gap-4 text-sm">
+                <div class="bg-slate-950/50 border border-slate-800 rounded-xl p-3.5 flex gap-3 items-start">
+                    <div class="bg-green-500/20 text-green-400 rounded-lg p-2 flex items-center justify-center font-bold text-base min-w-[36px]">
+                        +2
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-slate-200 text-xs uppercase tracking-wide">Marcador Exacto</h4>
+                        <p class="text-xs text-slate-400 mt-1">Se otorgarán 2 puntos si en un encuentro aciertas exactamente la cantidad de goles anotados por cada equipo.</p>
+                    </div>
+                </div>
+
+                <div class="bg-slate-950/50 border border-slate-800 rounded-xl p-3.5 flex gap-3 items-start">
+                    <div class="bg-blue-500/20 text-blue-400 rounded-lg p-2 flex items-center justify-center font-bold text-base min-w-[36px]">
+                        +1
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-slate-200 text-xs uppercase tracking-wide">Resultado / Tendencia</h4>
+                        <p class="text-xs text-slate-400 mt-1">Se otorgará 1 punto si en un encuentro acertaste al ganador del encuentro o al empate, pero no al número exacto de goles.</p>
+                    </div>
+                </div>
+
+                <div class="bg-slate-950/50 border border-slate-800 rounded-xl p-3.5 flex gap-3 items-start">
+                    <div class="bg-amber-500/20 text-amber-400 rounded-lg p-2 flex items-center justify-center font-bold text-base min-w-[36px]">
+                        0
+                    </div>
+                    <div>
+                        <h4 class="font-bold text-slate-200 text-xs uppercase tracking-wide">Sin Aciertos</h4>
+                        <p class="text-xs text-slate-400 mt-1">No se sumarán puntos si el resultado final (Ganador/Empate) difiere completamente de tu predicción.</p>
+                    </div>
+                </div>
+
+                <div class="bg-slate-950/30 border border-dashed border-slate-800 rounded-xl p-4 mt-2">
+                    <h3 class="text-xs font-bold text-yellow-500 uppercase tracking-wider mb-2"><i class="fa-solid fa-circle-exclamation mr-1"></i> Fechas Importantes</h3>
+                    <ul class="list-disc list-inside text-xs text-slate-400 space-y-2">
+                        <!-- <li><span class="text-slate-200 font-medium">Tiempos Reglamentarios:</span> Para la fase de eliminatorias, los marcadores válidos corresponden a los 90 minutos reglamentarios más el tiempo de compensación añadido por el árbitro. No incluye tandas de penales.</li> -->
+                        <!--<li><span class="text-slate-200 font-medium">Límite de registro:</span> La entrega de pronósticos se harán como límite en la fecha indicada.</li>-->
+                        <li><span class="text-slate-200 font-medium">Martes 9 de junio:</span> Entrega de pronósticos de los 24 juegos de la 1a Jornada.</li>
+                        <li><span class="text-slate-200 font-medium">Martes 16 de junio:</span> Entrega de pronósticos de los 24 juegos de la 2a Jornada.</li>
+                        <li><span class="text-slate-200 font-medium">Lunes 22 de junio:</span> Entrega de pronósticos de los 24 juegos de la 3a Jornada.</li>
+                        <!--<li><span class="text-slate-200 font-medium">Criterio de Desempate:</span> En caso de igualdad de puntos en la tabla general, el primer criterio será el mayor número de marcadores exactos (+2) acertados.</li>-->
+                    </ul>
+                </div>
+            </div>
+        </div>
+
+        <div class="absolute bottom-0 left-0 right-0 h-16 bg-[#030d1a] border-t border-slate-800/80 flex justify-around items-center px-4 z-50">
+            <button id="btn-nav-inicio" onclick="switchView('inicio')" class="flex flex-col items-center justify-center text-yellow-500 transition nav-btn">
+                <i class="fa-solid fa-house text-lg"></i>
+                <span class="text-[10px] mt-1 font-medium">Inicio</span>
+            </button>
+            <button id="btn-nav-puntajes" onclick="switchView('puntajes')" class="flex flex-col items-center justify-center text-slate-400 hover:text-white transition nav-btn">
+                <i class="fa-solid fa-chart-simple text-lg"></i>
+                <span class="text-[10px] mt-1 font-medium">Puntajes</span>
+            </button>
+            <button id="btn-nav-reglas" onclick="switchView('reglas')" class="flex flex-col items-center justify-center text-slate-400 hover:text-white transition nav-btn">
+                <i class="fa-solid fa-gavel text-lg"></i>
+                <span class="text-[10px] mt-1 font-medium">Reglas</span>
+            </button>
+        </div>
+
+    </div>
+
+    <script>
+        // Set dynamic date right over the matches element
+        function updateCurrentDate() {
+            const dateElement = document.getElementById("current-date");
+            const options = { weekday: 'long', day: 'numeric', month: 'long' };
+            const today = new Date();
+            let formattedDate = today.toLocaleDateString('es-ES', options);
+            dateElement.innerText = formattedDate.charAt(0).toUpperCase() + formattedDate.slice(1);
+        }
+
+        // SPA Navigation logic inside the mobile frame
+        function switchView(viewName) {
+            // Hide all views
+            document.getElementById("view-inicio").classList.add("hidden");
+            document.getElementById("view-puntajes").classList.add("hidden");
+            document.getElementById("view-reglas").classList.add("hidden");
+
+            // Reset navigation active colors
+            const buttons = document.querySelectorAll(".nav-btn");
+            buttons.forEach(btn => {
+                btn.classList.remove("text-yellow-500");
+                btn.classList.add("text-slate-400");
+            });
+
+            // Show selected view & highlight button
+            if (viewName === 'inicio') {
+                document.getElementById("view-inicio").classList.remove("hidden");
+                document.getElementById("btn-nav-inicio").classList.add("text-yellow-500");
+                document.getElementById("btn-nav-inicio").classList.remove("text-slate-400");
+            } else if (viewName === 'puntajes') {
+                document.getElementById("view-puntajes").classList.remove("hidden");
+                document.getElementById("btn-nav-puntajes").classList.add("text-yellow-500");
+                document.getElementById("btn-nav-puntajes").classList.remove("text-slate-400");
+            } else if (viewName === 'reglas') {
+                document.getElementById("view-reglas").classList.remove("hidden");
+                document.getElementById("btn-nav-reglas").classList.add("text-yellow-500");
+                document.getElementById("btn-nav-reglas").classList.remove("text-slate-400");
+            }
+        }
+
+        const defaultData = {
+            hoy: [
+                { eq1: "MÉXICO", flag1: "🇲🇽", eq2: "SUDÁFRICA", flag2: "🇿🇦", stadium: "Junio 11, Estadio CDMX, CDMX", time: "13:00h <br> QUINIELA STATS: &nbsp; L: 93% &nbsp; E: 7% &nbsp; V: 0%", status: "UPCOMING" },
+                { eq1: "COREA DEL SUR", flag1: "🇰🇷", eq2: "REPÚBLICA CHECA", flag2: "🇨🇿", stadium: "Junio 11, Estadio Akron, Guadalajara", time: "20:00h <br> QUINIELA STATS: &nbsp; L: 21% &nbsp; E: 64% &nbsp; V: 14%", status: "UPCOMING" }
+            ],
+            resumen: [
+                { eq1: "MÉXICO", flag1: "🇲🇽", r1: 1, r2: 0, flag2: "🇦🇺", eq2: "AUSTRALIA" },
+                { eq1: "MÉXICO", flag1: "🇲🇽", r1: 2, r2: 0, flag2: "🇬🇭", eq2: "GHANA" }
+            ],
+            quiniela: [
+                { pos: 1, name: "LUIS ANGEL MORENO", pts: 0, label: "", img: "Hombre_Desconoc.jpg" },
+                { pos: 2, name: "EDUARDO ROSALES", pts: 0, label: "", img: "ERosales.jpg" },
+                { pos: 3, name: "FRANCISCO H. OBLEA", pts: 0, label: "", img: "PacoOblea.jpg" },
+                { pos: 4, name: "RAYMUNDO E. PAVÁN", pts: 0, label: "", img: "Ray3.jpg" },
+                { pos: 5, name: "GASPAR PATIÑO", pts: 0, label: "", img: "Gaspar.jpg" },
+                { pos: 6, name: "BERNARDO RODRÍGUEZ", pts: 0, label: "", img: "Bernardo.jpg" },
+                { pos: 7, name: "KURT LING", pts: 0, label: "", img: "Kurt.jpg" },
+                { pos: 8, name: "JAVIER GALLEGOS", pts: 0, label: "", img: "JGallegos.jpg" },   
+                { pos: 9, name: "ARTURO CARRILLO", pts: 0, label: "", img: "ArturoC.jpg" },       
+                { pos: 10, name: "GERARDO BONILLA", pts: 0, label: "", img: "GerardoBonilla.jpg" },  
+                { pos: 11, name: "HUGO A. DELGADO", pts: 0, label: "Diego.jpg", img: "HugoDelgado.jpg" },                                                    
+                { pos: 12, name: "ALAN M. CONTRERAS", pts: 0, label: "", img: "AlanC.jpg" },
+                { pos: 13, name: "JOSÉ LUIS CANO", pts: 0, label: "", img: "JLCano.jpg" },        
+                { pos: 14, name: "JORGE PALOMEQUE", pts: 0, label: "", img: "Palomeque.jpg" },
+                { pos: 15, name: "JAIME NÚÑEZ", pts: 0, label: "", img: "JaimeNunez.jpg" },
+                { pos: 16, name: "HUGO RIVERA", pts: 0, label: "", img: "HugoRivera.jpg" },
+                { pos: 17, name: "ALEJANDRO TAGLE", pts: 0, label: "", img: "Hombre_Desconoc.jpg" },
+                { pos: 18, name: "JUAN CARLOS CHÁVEZ", pts: 0, label: "", img: "JCChavez.jpg" },        
+                { pos: 19, name: "CHRISTIAN BONILLA", pts: 0, label: "", img: "ChristianB.jpg" },  
+                { pos: 20, name: "JESUS M. DE LA O", pts: 0, label: "", img: "Hombre_Desconoc.jpg" },
+                { pos: 21, name: "ETZULLY ARROCENA", pts: 0, label: "", img: "Etzully.jpg" },
+                { pos: 22, name: "ANA ROSA JÍMENEZ", pts: 0, label: "", img: "AnaR.jpg" },
+                { pos: 23, name: "CÉSAR A. ROSALES", pts: 0, label: "", img: "CesarR.jpg" },
+                { pos: 24, name: "JAVIER CÁRDENAS", pts: 0, label: "", img: "JavierCardenas.jpg" },
+                { pos: 25, name: "MA. LUZ HERNÁNDEZ", pts: 0, label: "", img: "LuzMa.jpg" },
+                { pos: 26, name: "LUIS V. LÓPEZ", pts: 0, label: "", img: "LuisVirgilio.jpg" },
+                { pos: 27, name: "NOE GALO RAMÍREZ", pts: 0, label: "", img: "Galo.jpg" },
+                { pos: 28, name: "ALEJANDRO VÁZQUEZ", pts: 0, label: "", img: "AlexVazquez.jpg" }
+            ],
+            fixture: [
+                { date: "JUN 12", day: "24", eq1: "CANADÁ", flag1: "🇨🇦", eq2: "BOSNIA Y HERZEGOVINA", flag2: "🇧🇦" },
+                { date: "JUN 12", day: "25", eq1: "EE.UU.", flag1: "🇺🇸", eq2: "PARAGUAY", flag2: "🇵🇾" },
+                { date: "JUN 13", day: "24", eq1: "CATAR", flag1: "🇶🇦", eq2: "SUIZA", flag2: "🇨🇭" },
+                { date: "JUN 13", day: "25", eq1: "BRASIL", flag1: "🇧🇷", eq2: "MARRUECOS", flag2: "🇲🇦" },
+                { date: "JUN 13", day: "25", eq1: "HAITÍ.", flag1: "🇭🇹", eq2: "ESCOCIA", flag2: "🏴󠁧󠁢󠁳󠁣󠁴󠁿" },
+                { date: "JUN 13", day: "25", eq1: "AUSTRALIA", flag1: "🇦🇺", eq2: "TURQUÍA", flag2: "🇹🇷" }                                
+            ]
+        };
+
+        function renderDashboard(data) {
+            // 1. Partidos de Hoy
+            const hoyContainer = document.getElementById("partidos-hoy-container");
+            hoyContainer.innerHTML = "";
+            data.hoy.forEach((match, idx) => {
+                const isLive = match.status === "LIVE";
+                hoyContainer.innerHTML += `
+                    <div class="flex flex-col items-center w-full flex-shrink-0">
+                        <div class="w-full flex justify-between items-center text-xs font-semibold">
+                            <div class="flex items-center gap-2 w-5/12 justify-start">
+                                <span class="text-base">${match.flag1}</span>
+                                <span class="truncate">${match.eq1}</span>
+                            </div>
+                            <span class="text-slate-400 font-bold text-[10px] mx-1">vs</span>
+                            <div class="flex items-center gap-2 w-5/12 justify-end text-right">
+                                <span class="truncate">${match.eq2}</span>
+                                <span class="text-base">${match.flag2}</span>
+                            </div>
+                        </div>
+                        <div class="text-[10px] text-slate-400 mt-1">${match.stadium}, ${match.time}</div>
+                        ${isLive ? `<div class="mt-2 bg-red-600 text-white font-black text-[9px] px-2.5 py-0.5 rounded-full tracking-wider animate-pulse">LIVE</div>` : ''}
+                        ${idx < data.hoy.length - 1 ? `<div class="w-full border-t border-slate-800/80 mt-3 mb-1"></div>` : ''}
+                    </div>
+                `;
+            });
+
+            // 2. Resumen Jornada
+            const resumenContainer = document.getElementById("resumen-jornada-container");
+            resumenContainer.innerHTML = "";
+            data.resumen.forEach(item => {
+                resumenContainer.innerHTML += `
+                    <div class="min-w-[165px] bg-slate-900/90 border border-slate-800 rounded-xl p-3 flex flex-col items-center shadow-md">
+                        <span class="text-[9px] text-slate-400 font-bold tracking-wider mb-2 uppercase">Resumen Jornada</span>
+                        <div class="flex items-center justify-between w-full text-xs font-bold px-1">
+                            <span class="text-base">${item.flag1}</span>
+                            <span class="bg-slate-950 px-2 py-1 rounded text-sm text-yellow-500 font-mono">${item.r1} - ${item.r2}</span>
+                            <span class="text-base">${item.flag2}</span>
+                        </div>
+                        <div class="flex justify-between w-full text-[9px] text-slate-300 mt-2 px-1 font-medium">
+                            <span class="truncate max-w-[60px]">${item.eq1}</span>
+                            <span class="truncate max-w-[60px] text-right">${item.eq2}</span>
+                        </div>
+                    </div>
+                `;
+            });
+
+            // 3. Clasificación de la Quiniela (Paginated into groups of 5)
+            const wrapper = document.getElementById("quiniela-scroll-wrapper");
+            wrapper.innerHTML = "";
+            
+            const totalElements = data.quiniela.length;
+            const groupSize = 5;
+            
+            for (let i = 0; i < totalElements; i += groupSize) {
+                const chunk = data.quiniela.slice(i, i + groupSize);
+                let pageHtml = `
+                    <div class="min-w-full w-full flex-shrink-0 snap-start bg-slate-950/40 border border-slate-800/60 p-3 rounded-2xl flex flex-col gap-2 relative">
+                        <div class="flex flex-col gap-2">
+                `;
+
+                chunk.forEach(row => {
+                    const isLeader = row.pos === 1;
+                    const rowBg = isLeader ? 'linear-gradient(135deg, rgba(212,175,55,0.12) 0%, rgba(15,23,42,0.8) 100%)' : 'rgba(15, 23, 42, 0.45)';
+                    const borderStyle = isLeader ? 'border: 1px solid #d4af37' : 'border: 1px solid rgba(51, 65, 85, 0.4)';
+
+                    pageHtml += `
+                        <div style="background: ${rowBg}; ${borderStyle}" class="w-full h-[46px] rounded-xl flex items-center justify-between px-3 relative">
+                            <div class="flex items-center gap-2.5 overflow-hidden w-8/12">
+                                <span class="font-mono text-xs font-bold ${isLeader ? 'text-yellow-400' : 'text-slate-400'} w-4 text-center">${row.pos}</span>
+                                <div class="relative flex-shrink-0">
+                                    <img src="${row.img}" class="w-7 h-7 rounded-full object-cover border ${isLeader ? 'border-yellow-400' : 'border-slate-700'}" alt="profile">
+                                    ${isLeader ? `<div class="absolute -top-1.5 -left-1.5 text-yellow-400 text-[8px] rotate-[-25deg]"><i class="fa-solid fa-crown"></i></div>` : ''}
+                                </div>
+                                <span class="text-xs font-semibold text-slate-100 truncate tracking-wide">${row.name}</span>
+                            </div>
+                            <div class="flex items-center gap-2 text-right">
+                                <span class="text-xs font-bold font-mono ${isLeader ? 'text-yellow-400' : 'text-slate-300'} bg-slate-950/60 px-2.5 py-1 rounded-md min-w-[55px] text-center">
+                                    ${row.pts} <span class="text-[8px] font-sans font-normal text-slate-500">pts</span>
+                                </span>
+                            </div>
+                        </div>
+                    `;
+                });
+
+                if (chunk.length < groupSize) {
+                    for (let s = 0; s < (groupSize - chunk.length); s++) {
+                        pageHtml += `<div class="w-full h-[46px] bg-slate-900/10 border border-dashed border-slate-900/20 rounded-xl opacity-20"></div>`;
+                    }
+                }
+
+                pageHtml += `
+                        </div>
+                    </div>
+                `;
+                wrapper.innerHTML += pageHtml;
+            }
+
+            document.getElementById("scroll-hint").innerHTML = `<i class="fa-solid fa-layer-group mr-1"></i>${totalElements} participantes (${Math.ceil(totalElements/5)} bloques)`;
+
+            // 4. FIXTURE & PRÓXIMOS JUEGOS
+            const fixtureContainer = document.getElementById("fixture-container");
+            fixtureContainer.innerHTML = "";
+            data.fixture.forEach(item => {
+                fixtureContainer.innerHTML += `
+                    <div class="min-w-[140px] bg-slate-900/80 border border-slate-800/80 rounded-2xl p-3 flex flex-col items-center shadow-sm">
+                        <div class="bg-blue-900/30 text-blue-400 px-2 py-0.5 rounded-full text-[8px] font-extrabold tracking-wider mb-2 uppercase">${item.date}</div>
+                        <div class="flex flex-col items-center gap-1.5 w-full text-xs font-medium mt-1">
+                            <div class="flex items-center gap-1.5 justify-center">
+                                <span>${item.flag1}</span>
+                                <span class="text-slate-300 truncate max-w-[70px]">${item.eq1}</span>
+                            </div>
+                            <span class="text-[9px] text-slate-500 font-bold font-mono">vs</span>
+                            <div class="flex items-center gap-1.5 justify-center">
+                                <span>${item.flag2}</span>
+                                <span class="text-slate-300 truncate max-w-[70px]">${item.eq2}</span>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+
+        // Initialize elements on load
+        updateCurrentDate();
+        renderDashboard(defaultData);
+
+        // Excel Sheet Reader
+        function loadExcel(event) {
+            const file = event.target.files[0];
+            if (!file) return;
+
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                try {
+                    const data = new Uint8Array(e.target.result);
+                    const workbook = XLSX.read(data, { type: 'array' });
+                    
+                    const parsedData = { hoy: [], resumen: [], quiniela: [], fixture: [] };
+
+                    if(workbook.SheetNames.includes("Partidos de Hoy")) {
+                        const ws = workbook.Sheets["Partidos de Hoy"];
+                        const json = XLSX.utils.sheet_to_json(ws);
+                        parsedData.hoy = json.map(r => ({
+                            eq1: r["Equipo 1"], flag1: r["Bandera 1"],
+                            eq2: r["Equipo 2"], flag2: r["Bandera 2"],
+                            stadium: r["Estadio"], time: r["Hora"], status: r["Estado"]
+                        }));
+                    }
+
+                    if(workbook.SheetNames.includes("Resumen Jornada")) {
+                        const ws = workbook.Sheets["Resumen Jornada"];
+                        const json = XLSX.utils.sheet_to_json(ws);
+                        parsedData.resumen = json.map(r => ({
+                            eq1: r["Equipo 1"], flag1: r["Bandera 1"],
+                            r1: r["Goles 1"], r2: r["Goles 2"],
+                            flag2: r["Bandera 2"], eq2: r["Equipo 2"]
+                        }));
+                    }
+
+                    if(workbook.SheetNames.includes("Clasificación Quiniela")) {
+                        const ws = workbook.Sheets["Clasificación Quiniela"];
+                        const json = XLSX.utils.sheet_to_json(ws);
+                        parsedData.quiniela = json.map(r => ({
+                            pos: r["Posición"], name: r["Usuario"], pts: r["Puntos"],
+                            label: r["Etiqueta"], img: r["Avatar_URL"] || "https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?w=100"
+                        }));
+                    }
+
+                    if(workbook.SheetNames.includes("Fixture y Próximos")) {
+                        const ws = workbook.Sheets["Fixture y Próximos"];
+                        const json = XLSX.utils.sheet_to_json(ws);
+                        parsedData.fixture = json.map(r => ({
+                            date: r["Fecha"], day: r["Día_Num"],
+                            eq1: r["Equipo 1"], flag1: r["Bandera 1"],
+                            eq2: r["Equipo 2"], flag2: r["Bandera 2"]
+                        }));
+                    }
+
+                    renderDashboard(parsedData);
+                    document.getElementById("sync-status").innerText = "¡Sincronizado desde Excel!";
+                    document.getElementById("sync-status").classList.replace("text-slate-500", "text-green-400");
+                    document.getElementById("sync-icon").classList.replace("text-blue-600/70", "text-green-400");
+
+                } catch (err) {
+                    alert("Error procesando el archivo Excel.");
+                    console.error(err);
+                }
+            };
+            reader.readAsArrayBuffer(file);
+        }
+    </script>
+</body>
+</html>
