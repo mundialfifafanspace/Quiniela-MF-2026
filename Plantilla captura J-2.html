@@ -1,0 +1,747 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Quiniela Mundial 2026 - Captura de Resultados</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background-color: #0b151e;
+            color: #ffffff;
+            padding: 20px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        .container {
+            width: 100%;
+            max-width: 800px;
+            background: linear-gradient(145deg, #0f2030, #091017);
+            border-radius: 16px;
+            padding: 25px;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+            border: 1px solid #1a2f42;
+        }
+
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            border-bottom: 2px solid #1e3d59;
+            padding-bottom: 15px;
+        }
+
+        .header h1 {
+            font-size: 24px;
+            color: #00ff87;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+
+        .header p {
+            color: #8a9ca8;
+            font-size: 14px;
+        }
+
+        .user-info-section {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 25px;
+            background: rgba(17, 34, 51, 0.6);
+            padding: 15px;
+            border-radius: 8px;
+            border: 1px solid #1e3d59;
+        }
+
+        .user-info-section label {
+            font-weight: 600;
+            color: #00ff87;
+            font-size: 14px;
+            text-transform: uppercase;
+        }
+
+        .user-input {
+            width: 100%;
+            max-width: 300px;
+            height: 38px;
+            background-color: #070f16;
+            border: 1px solid #1e3d59;
+            border-radius: 6px;
+            color: #ffffff;
+            padding: 0 12px;
+            font-size: 15px;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .user-input:focus {
+            border-color: #00ff87;
+            box-shadow: 0 0 8px rgba(0, 255, 135, 0.3);
+        }
+
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 25px;
+            border-radius: 8px;
+            border: 1px solid #1e3d59;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            text-align: center;
+            background-color: #0d1b2a;
+            min-width: 500px;
+        }
+
+        th {
+            background-color: #112233;
+            color: #00ff87;
+            font-weight: 600;
+            padding: 14px 10px;
+            font-size: 13px;
+            text-transform: uppercase;
+            border-bottom: 2px solid #1e3d59;
+        }
+
+        tr {
+            border-bottom: 1px solid #162a3d;
+            transition: background-color 0.2s;
+        }
+
+        tr:hover {
+            background-color: #122538;
+        }
+
+        td {
+            padding: 15px 10px;
+            font-size: 15px;
+            color: #e2e8f0;
+            vertical-align: middle;
+        }
+
+        .matchup-container {
+            display: table;
+            width: 100%;
+        }
+
+        .team-cell {
+            display: table-cell;
+            width: 42%;
+            vertical-align: middle;
+        }
+
+        .team-local {
+            text-align: right;
+            padding-right: 20px;
+            font-weight: 500;
+        }
+
+        .team-visita {
+            text-align: left;
+            padding-left: 20px;
+            font-weight: 500;
+        }
+
+        .flag {
+            display: inline-block;
+            font-size: 20px;
+            vertical-align: middle;
+        }
+
+        .team-local .flag {
+            margin-left: 8px;
+        }
+
+        .team-visita .flag {
+            margin-right: 8px;
+        }
+
+        .score-cell {
+            display: table-cell;
+            width: 16%;
+            vertical-align: middle;
+            white-space: nowrap;
+        }
+
+        .score-input {
+            width: 45px;
+            height: 35px;
+            background-color: #070f16;
+            border: 1px solid #1e3d59;
+            border-radius: 6px;
+            color: #ffffff;
+            text-align: center;
+            font-size: 16px;
+            font-weight: bold;
+            outline: none;
+            transition: all 0.3s;
+        }
+
+        .score-input:focus {
+            border-color: #00ff87;
+            box-shadow: 0 0 8px rgba(0, 255, 135, 0.3);
+            background-color: #0b1926;
+        }
+
+        .score-separator {
+            margin: 0 6px;
+            color: #8a9ca8;
+            font-weight: bold;
+        }
+
+        .actions-section {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            margin-top: 20px;
+        }
+
+        .btn {
+            background: linear-gradient(90deg, #00ff87, #60efff);
+            color: #050b11;
+            border: none;
+            padding: 14px 40px;
+            font-size: 16px;
+            font-weight: bold;
+            border-radius: 30px;
+            cursor: pointer;
+            box-shadow: 0 4px 15px rgba(0, 255, 135, 0.4);
+            transition: transform 0.2s, box-shadow 0.2s;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            width: 100%;
+            max-width: 320px;
+        }
+
+        .btn:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(0, 255, 135, 0.6);
+        }
+
+        .btn:active {
+            transform: translateY(1px);
+        }
+
+        .btn-secondary {
+            background: transparent;
+            border: 1px solid #1e3d59;
+            color: #8a9ca8;
+            box-shadow: none;
+            font-size: 13px;
+            padding: 8px 20px;
+            max-width: 250px;
+        }
+
+        .btn-secondary:hover {
+            background-color: #122538;
+            color: #ffffff;
+            box-shadow: none;
+        }
+
+        .btn-danger {
+            background: transparent;
+            border: 1px solid #ff4a4a;
+            color: #ff4a4a;
+            box-shadow: none;
+            font-size: 13px;
+            padding: 8px 20px;
+            max-width: 250px;
+        }
+
+        .btn-danger:hover {
+            background-color: rgba(255, 74, 74, 0.1);
+            color: #ff6b6b;
+        }
+
+        .note {
+            font-size: 11px;
+            color: #637b8f;
+            text-align: center;
+            max-width: 500px;
+            line-height: 1.4;
+            margin-top: 5px;
+        }
+
+        /* Remueve los estilos pesados por defecto de Apple iOS en formularios */
+        .score-input, .user-input {
+            -webkit-appearance: none;
+            appearance: none;
+            border-radius: 6px;
+        }
+
+        @media (max-width: 600px) {
+            body {
+                padding: 10px;
+            }
+            .container {
+                padding: 15px;
+            }
+            .user-info-section {
+                flex-direction: column;
+                align-items: stretch;
+            }
+            .user-input {
+                max-width: 100%;
+            }
+            td, th {
+                padding: 12px 5px;
+            }
+            .team-local { padding-right: 8px; }
+            .team-visita { padding-left: 8px; }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div class="header">
+        <h1>FASE DE GRUPOS.<br>
+            JORNADA 2</h1>
+        <p>Captura tus pronósticos y envía tu quiniela con el botón "ENVIAR POR CORREO"</p>
+    </div>
+
+    <form id="quinielaForm">
+        <!-- Campo para Nombre del Usuario -->
+        <div class="user-info-section">
+            <label for="userName">Nombre del Participante:</label>
+            <input type="text" id="userName" class="user-input" placeholder="Escribe tu nombre completo" required>
+        </div>
+
+        <div class="table-container">
+            <table>
+                <thead>
+                    <tr>
+                        <th style="width: 100%;">Partido (Local vs Visita)</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td>
+                            <div class="matchup-container">
+                                <div class="team-cell team-local" data-team="Rep. Checa">Rep. Checa <span class="flag">🇨🇿</span></div>
+                                <div class="score-cell">
+                                    <input type="number" min="0" class="score-input" data-side="local" required>
+                                    <span class="score-separator">-</span>
+                                    <input type="number" min="0" class="score-input" data-side="visita" required>
+                                </div>
+                                <div class="team-cell team-visita" data-team="Sudáfrica"><span class="flag">🇿🇦</span> Sudáfrica</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="matchup-container">
+                                <div class="team-cell team-local" data-team="México">México <span class="flag">🇲🇽</span></div>
+                                <div class="score-cell">
+                                    <input type="number" min="0" class="score-input" data-side="local" required>
+                                    <span class="score-separator">-</span>
+                                    <input type="number" min="0" class="score-input" data-side="visita" required>
+                                </div>
+                                <div class="team-cell team-visita" data-team="Corea del sur"><span class="flag">🇰🇷</span> Corea del sur</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="matchup-container">
+                                <div class="team-cell team-local" data-team="Suiza">Suiza <span class="flag">🇨🇭</span></div>
+                                <div class="score-cell">
+                                    <input type="number" min="0" class="score-input" data-side="local" required>
+                                    <span class="score-separator">-</span>
+                                    <input type="number" min="0" class="score-input" data-side="visita" required>
+                                </div>
+                                <div class="team-cell team-visita" data-team="Bosnia y Herzegovina"><span class="flag">🇧🇦</span> Bosnia y Herzegovina</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="matchup-container">
+                                <div class="team-cell team-local" data-team="Canadá">Canadá <span class="flag">🇨🇦</span></div>
+                                <div class="score-cell">
+                                    <input type="number" min="0" class="score-input" data-side="local" required>
+                                    <span class="score-separator">-</span>
+                                    <input type="number" min="0" class="score-input" data-side="visita" required>
+                                </div>
+                                <div class="team-cell team-visita" data-team="Catar"><span class="flag">🇶🇦</span> Catar</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="matchup-container">
+                                <div class="team-cell team-local" data-team="Escocia">Escocia <span class="flag">🏴󠁧󠁢󠁳󠁣󠁴󠁿</span></div>
+                                <div class="score-cell">
+                                    <input type="number" min="0" class="score-input" data-side="local" required>
+                                    <span class="score-separator">-</span>
+                                    <input type="number" min="0" class="score-input" data-side="visita" required>
+                                </div>
+                                <div class="team-cell team-visita" data-team="Marruecos"><span class="flag">🇲🇦</span> Marruecos</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="matchup-container">
+                                <div class="team-cell team-local" data-team="Brasil">Brasil <span class="flag">🇧🇷</span></div>
+                                <div class="score-cell">
+                                    <input type="number" min="0" class="score-input" data-side="local" required>
+                                    <span class="score-separator">-</span>
+                                    <input type="number" min="0" class="score-input" data-side="visita" required>
+                                </div>
+                                <div class="team-cell team-visita" data-team="Haití"><span class="flag">🇭🇹</span> Haití</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="matchup-container">
+                                <div class="team-cell team-local" data-team="Estados Unidos">Estados Unidos <span class="flag">🇺🇸</span></div>
+                                <div class="score-cell">
+                                    <input type="number" min="0" class="score-input" data-side="local" required>
+                                    <span class="score-separator">-</span>
+                                    <input type="number" min="0" class="score-input" data-side="visita" required>
+                                </div>
+                                <div class="team-cell team-visita" data-team="Australia"><span class="flag">🇦🇺</span> Australia</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="matchup-container">
+                                <div class="team-cell team-local" data-team="Turquía">Turquía <span class="flag">🇹🇷</span></div>
+                                <div class="score-cell">
+                                    <input type="number" min="0" class="score-input" data-side="local" required>
+                                    <span class="score-separator">-</span>
+                                    <input type="number" min="0" class="score-input" data-side="visita" required>
+                                </div>
+                                <div class="team-cell team-visita" data-team="Paraguay"><span class="flag">🇵🇾</span> Paraguay</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="matchup-container">
+                                <div class="team-cell team-local" data-team="Alemania">Alemania <span class="flag">🇩🇪</span></div>
+                                <div class="score-cell">
+                                    <input type="number" min="0" class="score-input" data-side="local" required>
+                                    <span class="score-separator">-</span>
+                                    <input type="number" min="0" class="score-input" data-side="visita" required>
+                                </div>
+                                <div class="team-cell team-visita" data-team="Costa de Marfil"><span class="flag">🇨🇮</span> Costa de Marfil</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="matchup-container">
+                                <div class="team-cell team-local" data-team="Ecuador">Ecuador <span class="flag">🇪🇨</span></div>
+                                <div class="score-cell">
+                                    <input type="number" min="0" class="score-input" data-side="local" required>
+                                    <span class="score-separator">-</span>
+                                    <input type="number" min="0" class="score-input" data-side="visita" required>
+                                </div>
+                                <div class="team-cell team-visita" data-team="Curazao"><span class="flag">🇨🇼</span> Curazao</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="matchup-container">
+                                <div class="team-cell team-local" data-team="Países Bajos">Países Bajos <span class="flag">🇳🇱</span></div>
+                                <div class="score-cell">
+                                    <input type="number" min="0" class="score-input" data-side="local" required>
+                                    <span class="score-separator">-</span>
+                                    <input type="number" min="0" class="score-input" data-side="visita" required>
+                                </div>
+                                <div class="team-cell team-visita" data-team="Suecia"><span class="flag">🇸🇪</span> Suecia</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="matchup-container">
+                                <div class="team-cell team-local" data-team="Túnez">Túnez <span class="flag">🇹🇳</span></div>
+                                <div class="score-cell">
+                                    <input type="number" min="0" class="score-input" data-side="local" required>
+                                    <span class="score-separator">-</span>
+                                    <input type="number" min="0" class="score-input" data-side="visita" required>
+                                </div>
+                                <div class="team-cell team-visita" data-team="Japón"><span class="flag">🇯🇵</span> Japón</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="matchup-container">
+                                <div class="team-cell team-local" data-team="Bélgica">Bélgica <span class="flag">🇧🇪</span></div>
+                                <div class="score-cell">
+                                    <input type="number" min="0" class="score-input" data-side="local" required>
+                                    <span class="score-separator">-</span>
+                                    <input type="number" min="0" class="score-input" data-side="visita" required>
+                                </div>
+                                <div class="team-cell team-visita" data-team="Irán"><span class="flag">🇮🇷</span> Irán</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="matchup-container">
+                                <div class="team-cell team-local" data-team="Nueva Zelanda">Nueva Zelanda <span class="flag">🇳🇿</span></div>
+                                <div class="score-cell">
+                                    <input type="number" min="0" class="score-input" data-side="local" required>
+                                    <span class="score-separator">-</span>
+                                    <input type="number" min="0" class="score-input" data-side="visita" required>
+                                </div>
+                                <div class="team-cell team-visita" data-team="Egipto"><span class="flag">🇪🇬</span> Egipto</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="matchup-container">
+                                <div class="team-cell team-local" data-team="España">España <span class="flag">🇪🇸</span></div>
+                                <div class="score-cell">
+                                    <input type="number" min="0" class="score-input" data-side="local" required>
+                                    <span class="score-separator">-</span>
+                                    <input type="number" min="0" class="score-input" data-side="visita" required>
+                                </div>
+                                <div class="team-cell team-visita" data-team="Arabia Saudita"><span class="flag">🇸🇦</span> Arabia Saudita</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="matchup-container">
+                                <div class="team-cell team-local" data-team="Uruguay">Uruguay <span class="flag">🇺🇾</span></div>
+                                <div class="score-cell">
+                                    <input type="number" min="0" class="score-input" data-side="local" required>
+                                    <span class="score-separator">-</span>
+                                    <input type="number" min="0" class="score-input" data-side="visita" required>
+                                </div>
+                                <div class="team-cell team-visita" data-team="Cabo Verde"><span class="flag">🇨🇻</span> Cabo Verde</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="matchup-container">
+                                <div class="team-cell team-local" data-team="Francia">Francia <span class="flag">🇫🇷</span></div>
+                                <div class="score-cell">
+                                    <input type="number" min="0" class="score-input" data-side="local" required>
+                                    <span class="score-separator">-</span>
+                                    <input type="number" min="0" class="score-input" data-side="visita" required>
+                                </div>
+                                <div class="team-cell team-visita" data-team="Irak"><span class="flag">🇮🇶</span> Irak</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="matchup-container">
+                                <div class="team-cell team-local" data-team="Noruega">Noruega <span class="flag">🇳🇴</span></div>
+                                <div class="score-cell">
+                                    <input type="number" min="0" class="score-input" data-side="local" required>
+                                    <span class="score-separator">-</span>
+                                    <input type="number" min="0" class="score-input" data-side="visita" required>
+                                </div>
+                                <div class="team-cell team-visita" data-team="Senegal"><span class="flag">🇸🇳</span> Senegal</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="matchup-container">
+                                <div class="team-cell team-local" data-team="Argentina">Argentina <span class="flag">🇦🇷</span></div>
+                                <div class="score-cell">
+                                    <input type="number" min="0" class="score-input" data-side="local" required>
+                                    <span class="score-separator">-</span>
+                                    <input type="number" min="0" class="score-input" data-side="visita" required>
+                                </div>
+                                <div class="team-cell team-visita" data-team="Austria"><span class="flag">🇦🇹</span> Austria</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="matchup-container">
+                                <div class="team-cell team-local" data-team="Jordania">Jordania <span class="flag">🇯🇴</span></div>
+                                <div class="score-cell">
+                                    <input type="number" min="0" class="score-input" data-side="local" required>
+                                    <span class="score-separator">-</span>
+                                    <input type="number" min="0" class="score-input" data-side="visita" required>
+                                </div>
+                                <div class="team-cell team-visita" data-team="Argelia"><span class="flag">🇩🇿</span> Argelia</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="matchup-container">
+                                <div class="team-cell team-local" data-team="Portugal">Portugal <span class="flag">🇵🇹</span></div>
+                                <div class="score-cell">
+                                    <input type="number" min="0" class="score-input" data-side="local" required>
+                                    <span class="score-separator">-</span>
+                                    <input type="number" min="0" class="score-input" data-side="visita" required>
+                                </div>
+                                <div class="team-cell team-visita" data-team="Uzbekistán"><span class="flag">🇺🇿</span> Uzbekistán</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="matchup-container">
+                                <div class="team-cell team-local" data-team="Colombia">Colombia <span class="flag">🇨🇴</span></div>
+                                <div class="score-cell">
+                                    <input type="number" min="0" class="score-input" data-side="local" required>
+                                    <span class="score-separator">-</span>
+                                    <input type="number" min="0" class="score-input" data-side="visita" required>
+                                </div>
+                                <div class="team-cell team-visita" data-team="RD Congo"><span class="flag">🇨🇬</span> RD Congo</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="matchup-container">
+                                <div class="team-cell team-local" data-team="Inglaterra">Inglaterra <span class="flag">🏴󠁧󠁢󠁥󠁮󠁧󠁿</span></div>
+                                <div class="score-cell">
+                                    <input type="number" min="0" class="score-input" data-side="local" required>
+                                    <span class="score-separator">-</span>
+                                    <input type="number" min="0" class="score-input" data-side="visita" required>
+                                </div>
+                                <div class="team-cell team-visita" data-team="Ghana"><span class="flag">🇬🇭</span> Ghana</div>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td>
+                            <div class="matchup-container">
+                                <div class="team-cell team-local" data-team="Panamá">Panamá <span class="flag">🇵🇦</span></div>
+                                <div class="score-cell">
+                                    <input type="number" min="0" class="score-input" data-side="local" required>
+                                    <span class="score-separator">-</span>
+                                    <input type="number" min="0" class="score-input" data-side="visita" required>
+                                </div>
+                                <div class="team-cell team-visita" data-team="Croacia"><span class="flag">🇭🇷</span> Croacia</div>
+                            </div>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="actions-section">
+            <button type="submit" class="btn">Enviar por Correo</button>
+            <button type="button" id="downloadBtn" class="btn btn-secondary">Descargar archivo Excel (.csv)</button>
+            <button type="button" id="clearBtn" class="btn btn-danger">Limpiar Plantilla</button>
+            <p class="note">Al dar touch en "Enviar por correo", se abrirá tu gestor de correo predeterminado dirigido a mundialfifa.fanspace@gmail.com con tus pronósticos.</p>
+        </div>
+    </form>
+</div>
+
+<script>
+    function generateCleanExcelData() {
+        let csvContent = "Local;Score Local;Score Visita;Visita\n";
+        const rows = document.querySelectorAll('tbody tr');
+        let complete = true;
+
+        rows.forEach(row => {
+            const local = row.querySelector('.team-local').getAttribute('data-team');
+            const visita = row.querySelector('.team-visita').getAttribute('data-team');
+            const scoreLocal = row.querySelector('.score-input[data-side="local"]').value;
+            const scoreVisita = row.querySelector('.score-input[data-side="visita"]').value;
+            
+            if(!scoreLocal || !scoreVisita) {
+                complete = false;
+            }
+            csvContent += `${local};${scoreLocal};${scoreVisita};${visita}\n`;
+        });
+
+        return { data: csvContent, isComplete: complete };
+    }
+
+    document.getElementById('quinielaForm').addEventListener('submit', function(e) {
+        e.preventDefault();
+        
+        const name = document.getElementById('userName').value.trim();
+        const result = generateCleanExcelData();
+        const email = "mundialfifa.fanspace@gmail.com";
+        const subject = encodeURIComponent(`Quiniela J1 - ${name}`);
+        const body = encodeURIComponent(`Hola,\n\nAdjunto los resultados limpios de mi Quiniela (Jornada 2).\nParticipante: ${name}\n\nDatos optimizados para Excel:\n\n` + result.data);
+        
+        alert("¡Estructura de datos simplificada generada! Se abrirá tu aplicación de correo para enviarla.");
+        
+        // Solución compatible con iOS: Uso de enlace virtual en pestaña externa
+        const mailtoLink = `mailto:${email}?subject=${subject}&body=${body}`;
+        const tempLink = document.createElement('a');
+        tempLink.href = mailtoLink;
+        tempLink.target = '_blank'; 
+        document.body.appendChild(tempLink);
+        tempLink.click();
+        document.body.removeChild(tempLink);
+    });
+
+    document.getElementById('downloadBtn').addEventListener('click', function() {
+        const nameInput = document.getElementById('userName');
+        if(!nameInput.checkValidity()){
+            alert("Por favor, ingresa tu nombre antes de descargar el archivo.");
+            nameInput.focus();
+            return;
+        }
+
+        const name = nameInput.value.trim();
+        const result = generateCleanExcelData();
+
+        if(!result.isComplete) {
+            if(!confirm("Tienes pronósticos vacíos. ¿Deseas descargar el archivo de todas formas?")) {
+                return;
+            }
+        }
+
+        // Solución compatible para descargas Blob en iOS Safari
+        const blob = new Blob([new Uint8Array([0xEF, 0xBB, 0xBF]), result.data], { type: 'text/csv;charset=utf-8;' });
+        const url = URL.createObjectURL(blob);
+        const link = document.createElement("a");
+        
+        link.href = url;
+        // Reemplazo de espacios por guiones para evitar fallas de rutas de descarga en iOS
+        link.setAttribute("download", `quiniela_${name.replace(/\s+/g, '_')}.csv`);
+        link.target = '_blank'; 
+        
+        document.body.appendChild(link);
+        link.click();
+        
+        // Timeout para permitir que WebKit (Safari) procese la acción antes de destruir el nodo
+        setTimeout(() => {
+            document.body.removeChild(link);
+            URL.revokeObjectURL(url);
+        }, 100);
+    });
+
+    document.getElementById('clearBtn').addEventListener('click', function() {
+        if (confirm("¿Estás seguro de que deseas limpiar todos los marcadores capturados?")) {
+            const scoreInputs = document.querySelectorAll('.score-input');
+            scoreInputs.forEach(input => {
+                input.value = '';
+            });
+            alert("Los marcadores se han reiniciado correctamente.");
+        }
+    });
+</script>
+
+</body>
+</html>
